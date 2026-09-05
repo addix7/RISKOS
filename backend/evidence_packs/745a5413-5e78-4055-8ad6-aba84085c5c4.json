@@ -1,0 +1,52 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-08-22T07:24:02.354359+00:00",
+  "transaction": {
+    "id": "fee9bad8-714b-4c0c-9a7b-b228eaa8c4e7",
+    "amount_paise": 8500000,
+    "amount_inr": 85000.0,
+    "currency": "INR",
+    "status": "pending",
+    "created_at": "2026-08-22T07:24:02",
+    "risk_score": 45.44,
+    "risk_label": "verify",
+    "customer_id": "fcc00a6b-658d-4fde-8f62-c39af9f3f180",
+    "merchant_id": "cb101fab-71a3-4b7d-9d87-bc0f2f655a80"
+  },
+  "chargeback": {
+    "id": "745a5413-5e78-4055-8ad6-aba84085c5c4",
+    "filed_at": "2026-08-22T07:24:02",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "0ae79240-0daa-407a-85c3-c259a2e64a62",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device linked exclusively to 1 customer.",
+          "severity": "LOW_RISK",
+          "source": "get_device_history"
+        }
+      ]
+    },
+    "ai_conclusion": "Moderate risk transaction (score: 45.4). Discrepancies detected requiring step-up verification (e.g. OTP/3DS).",
+    "recommended_action": "verify",
+    "confidence": 0.78,
+    "created_at": "2026-08-22T07:24:02"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Analyst Priya",
+      "decision": "approved_ai_recommendation",
+      "final_action": "verify",
+      "reason": "Verified anomalous pattern with high confidence.",
+      "reviewed_at": "2026-08-22T07:24:02"
+    }
+  ],
+  "privacy_note": "Device fingerprints, IP addresses, and payment instrument identifiers are stored as SHA-256 hashes only. Raw PII is never persisted."
+}

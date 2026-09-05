@@ -1,0 +1,71 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-08-28T06:00:42.970798+00:00",
+  "transaction": {
+    "id": "116ac567-257e-4d22-a6a8-a6b4218e4137",
+    "amount_paise": 8500000,
+    "amount_inr": 85000.0,
+    "currency": "INR",
+    "status": "pending",
+    "created_at": "2026-08-28T06:00:42",
+    "risk_score": 45.44,
+    "risk_label": "verify"
+  },
+  "customer": {
+    "id": "abffe0a2-8b44-4a99-8e6b-e42a263dec85",
+    "name": "Test Subject",
+    "email": "test_abffe0a2@example.com",
+    "account_age_days": 0,
+    "trust_score": 0.9
+  },
+  "merchant": {
+    "id": "77a9097b-a53b-458d-8e09-34c5695a962b",
+    "name": "Test Merchant",
+    "category": "electronics"
+  },
+  "telemetry": {
+    "device_id": "355bdcd9-9514-4f33-bde3-455ae9e93cfe",
+    "device_fingerprint_hash": "c60d9cc84bba6620208b6c3e1123c7143300e6d92f94d2e7334a114c4fd30e48",
+    "ip_id": "e567e73b-4f5f-41cf-9349-c139e94b1349",
+    "ip_hash": "2a39f1eedcd9f986327b5e4da842426f4f05b8f16f0ef385639dbec0db70eaae",
+    "instrument_id": "98529313-97bb-43a0-a14b-24a124cf8d26",
+    "instrument_hash": "d7d18589ccece1184a87a028ddf6e1778a71646e39fb03bc6ab0b50c16d71910",
+    "instrument_type": "card"
+  },
+  "chargeback": {
+    "id": "0a02cf5b-7acc-45a4-9b63-ba9750961abf",
+    "filed_at": "2026-08-28T06:00:42",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "5dde3e8e-976b-460a-bed1-b3feddadb54d",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device linked exclusively to 1 customer.",
+          "severity": "LOW_RISK",
+          "source": "get_device_history"
+        }
+      ]
+    },
+    "ai_conclusion": "Moderate risk transaction (score: 45.4). Discrepancies detected requiring step-up verification (e.g. OTP/3DS).",
+    "recommended_action": "verify",
+    "confidence": 0.78,
+    "created_at": "2026-08-28T06:00:42"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Analyst Priya",
+      "decision": "approved_ai_recommendation",
+      "final_action": "verify",
+      "reason": "Verified anomalous pattern with high confidence.",
+      "reviewed_at": "2026-08-28T06:00:42"
+    }
+  ],
+  "privacy_statement": "Telemetry identifiers and payment instruments are cryptographically hashed using SHA-256. Raw payment credentials and raw IP addresses are not stored in unhashed form, ensuring full compliance with PCI-DSS and privacy regulations."
+}

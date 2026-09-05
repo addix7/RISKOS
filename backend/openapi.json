@@ -1,0 +1,2011 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RISKOS - AI Payment Risk Engine",
+    "description": "Autonomous payment fraud detection, AI investigation, entity graph, and counterfactual simulation platform.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "description": "Authenticate an analyst/admin user and return a JWT Bearer token.\nDefault credentials for demo:\n- Email: analyst@riskos.ai | Password: analyst_demo_secret_2026\n- Email: priya@riskos.ai   | Password: analyst_demo_secret_2026\n- Email: admin@riskos.ai   | Password: admin_demo_secret_2026",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get Current User Profile",
+        "description": "Return currently authenticated analyst profile (protected route).",
+        "operationId": "get_current_user_profile_api_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/transactions": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "List Transactions",
+        "description": "List transactions with pagination and optional filtering.",
+        "operationId": "list_transactions_api_transactions_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Offset"
+          },
+          {
+            "name": "customer_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Customer Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Ingest Transaction",
+        "description": "Ingest a new payment transaction.",
+        "operationId": "ingest_transaction_api_transactions_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/transactions/{transaction_id}": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Get Transaction",
+        "description": "Retrieve a single transaction by UUID.",
+        "operationId": "get_transaction_api_transactions__transaction_id__get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/risk/score": {
+      "post": {
+        "tags": [
+          "Risk"
+        ],
+        "summary": "Score Transaction Endpoint",
+        "description": "Score a transaction for fraud risk.",
+        "operationId": "score_transaction_endpoint_api_risk_score_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskScoreResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/spikes/{merchant_id}": {
+      "get": {
+        "tags": [
+          "Spikes"
+        ],
+        "summary": "Check Spike",
+        "description": "Check transaction velocity vs. baseline for a merchant.",
+        "operationId": "check_spike_api_spikes__merchant_id__get",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpikeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigations": {
+      "post": {
+        "tags": [
+          "Investigations"
+        ],
+        "summary": "Trigger Investigation",
+        "description": "Trigger an AI investigation for a transaction.",
+        "operationId": "trigger_investigation_api_investigations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigations/{investigation_id}": {
+      "get": {
+        "tags": [
+          "Investigations"
+        ],
+        "summary": "Get Investigation",
+        "description": "Fetch investigation detail.",
+        "operationId": "get_investigation_api_investigations__investigation_id__get",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/graph/{customer_id}": {
+      "get": {
+        "tags": [
+          "Graph"
+        ],
+        "summary": "Get Entity Graph",
+        "description": "Get entity relationship graph centered on a customer.",
+        "operationId": "get_entity_graph_api_graph__customer_id__get",
+        "parameters": [
+          {
+            "name": "customer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Customer Id"
+            }
+          },
+          {
+            "name": "hops",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3,
+              "minimum": 1,
+              "default": 2,
+              "title": "Hops"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/counterfactual": {
+      "post": {
+        "tags": [
+          "Counterfactual"
+        ],
+        "summary": "Run Counterfactual",
+        "description": "Simulate outcomes of allow/verify/hold/block for a transaction.",
+        "operationId": "run_counterfactual_api_counterfactual_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounterfactualResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decision": {
+      "post": {
+        "tags": [
+          "Decision"
+        ],
+        "summary": "Get Decision",
+        "description": "Get final recommended action for a transaction.",
+        "operationId": "get_decision_api_decision_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/pending": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "List Pending Reviews",
+        "description": "List investigations awaiting human decision with pagination.",
+        "operationId": "list_pending_reviews_api_reviews_pending_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingReviewsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/{investigation_id}": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Submit Review",
+        "description": "Submit analyst decision on an investigation and update transaction status accordingly.",
+        "operationId": "submit_review_api_reviews__investigation_id__post",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chargebacks/{transaction_id}/evidence-pack": {
+      "post": {
+        "tags": [
+          "Chargebacks"
+        ],
+        "summary": "Create Evidence Pack",
+        "description": "Generate and store a chargeback evidence pack for a transaction.",
+        "operationId": "create_evidence_pack_api_chargebacks__transaction_id__evidence_pack_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/model/health": {
+      "get": {
+        "tags": [
+          "Model Health"
+        ],
+        "summary": "Model Health",
+        "description": "Return model metrics and false-positive rate drift by account age.",
+        "operationId": "model_health_api_model_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/summary": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Dashboard Summary",
+        "description": "Command center summary metrics:\n- total_transactions: total transaction volume\n- high_risk_count: transactions in hold/block tier\n- loss_prevented: cumulative volume saved by blocked transactions\n- live_activity: recent transactions with clear human-reviewed vs ML status semantics.",
+        "operationId": "get_dashboard_summary_api_dashboard_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/live": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Live Activity Feed",
+        "description": "Optimized live feed endpoint for frontend polling.\nReturns latest transaction scoring and review activity in reverse chronological order.",
+        "operationId": "get_live_activity_feed_api_dashboard_live_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/stream": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Stream Live Activity",
+        "description": "Server-Sent Events (SSE) stream for real-time frontend command center.\nEmits live transaction updates every 3 seconds.",
+        "operationId": "stream_live_activity_api_dashboard_stream_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/metrics": {
+      "get": {
+        "tags": [
+          "Campaign Detection"
+        ],
+        "summary": "Get Campaign Metrics Endpoint",
+        "description": "Return system-level Campaign metrics: TTC (Time-to-Containment), ACR, and exposure protected.",
+        "operationId": "get_campaign_metrics_endpoint_api_campaigns_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/active": {
+      "get": {
+        "tags": [
+          "Campaign Detection"
+        ],
+        "summary": "Get Active Campaigns",
+        "description": "List all forming, active, and watchlist campaigns.",
+        "operationId": "get_active_campaigns_api_campaigns_active_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}": {
+      "get": {
+        "tags": [
+          "Campaign Detection"
+        ],
+        "summary": "Get Campaign Detail",
+        "description": "Fetch full campaign detail including entities, full timeline events, and suppressor proof.",
+        "operationId": "get_campaign_detail_api_campaigns__campaign_id__get",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}/contain": {
+      "post": {
+        "tags": [
+          "Campaign Detection"
+        ],
+        "summary": "Contain Campaign Endpoint",
+        "description": "Execute containment policy across all entities attributed to this campaign.",
+        "operationId": "contain_campaign_endpoint_api_campaigns__campaign_id__contain_post",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContainmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{campaign_id}/counterfactual": {
+      "post": {
+        "tags": [
+          "Campaign Detection"
+        ],
+        "summary": "Get Campaign Counterfactual Endpoint",
+        "description": "Compute campaign containment counterfactual comparison (Status Quo vs Challenge vs Contain).",
+        "operationId": "get_campaign_counterfactual_endpoint_api_campaigns__campaign_id__counterfactual_post",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Campaign Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CampaignPolicy": {
+        "type": "string",
+        "enum": [
+          "allow",
+          "challenge",
+          "contain"
+        ],
+        "title": "CampaignPolicy"
+      },
+      "ContainmentRequest": {
+        "properties": {
+          "policy": {
+            "$ref": "#/components/schemas/CampaignPolicy",
+            "description": "Policy to apply: contain or challenge",
+            "default": "contain"
+          },
+          "analyst_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analyst Name",
+            "default": "Demo Analyst"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "default": "Coordinated botnet containment executed from RISKOS console."
+          }
+        },
+        "type": "object",
+        "title": "ContainmentRequest"
+      },
+      "CounterfactualOption": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "estimated_fraud_loss_paise": {
+            "type": "integer",
+            "title": "Estimated Fraud Loss Paise"
+          },
+          "estimated_fraud_loss_inr": {
+            "type": "number",
+            "title": "Estimated Fraud Loss Inr"
+          },
+          "friction_cost_paise": {
+            "type": "integer",
+            "title": "Friction Cost Paise"
+          },
+          "friction_cost_inr": {
+            "type": "number",
+            "title": "Friction Cost Inr"
+          },
+          "net_expected_value_paise": {
+            "type": "integer",
+            "title": "Net Expected Value Paise"
+          },
+          "recommended": {
+            "type": "boolean",
+            "title": "Recommended"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "estimated_fraud_loss_paise",
+          "estimated_fraud_loss_inr",
+          "friction_cost_paise",
+          "friction_cost_inr",
+          "net_expected_value_paise",
+          "recommended"
+        ],
+        "title": "CounterfactualOption"
+      },
+      "CounterfactualResponse": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/CounterfactualOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "recommended_action": {
+            "type": "string",
+            "title": "Recommended Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "risk_score",
+          "options",
+          "recommended_action"
+        ],
+        "title": "CounterfactualResponse"
+      },
+      "DashboardSummary": {
+        "properties": {
+          "total_transactions": {
+            "type": "integer",
+            "title": "Total Transactions"
+          },
+          "high_risk_count": {
+            "type": "integer",
+            "title": "High Risk Count"
+          },
+          "loss_prevented_paise": {
+            "type": "integer",
+            "title": "Loss Prevented Paise"
+          },
+          "loss_prevented_inr": {
+            "type": "number",
+            "title": "Loss Prevented Inr"
+          },
+          "live_activity": {
+            "items": {
+              "$ref": "#/components/schemas/LiveActivityItem"
+            },
+            "type": "array",
+            "title": "Live Activity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_transactions",
+          "high_risk_count",
+          "loss_prevented_paise",
+          "loss_prevented_inr",
+          "live_activity"
+        ],
+        "title": "DashboardSummary"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "risk_band": {
+            "type": "string",
+            "title": "Risk Band"
+          },
+          "final_action": {
+            "type": "string",
+            "title": "Final Action"
+          },
+          "reasoning": {
+            "type": "string",
+            "title": "Reasoning"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "risk_score",
+          "risk_band",
+          "final_action",
+          "reasoning",
+          "confidence"
+        ],
+        "title": "DecisionResponse"
+      },
+      "FinalAction": {
+        "type": "string",
+        "enum": [
+          "allow",
+          "verify",
+          "hold",
+          "block"
+        ],
+        "title": "FinalAction"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InvestigationCreate": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id"
+        ],
+        "title": "InvestigationCreate"
+      },
+      "InvestigationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "evidence": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
+          "ai_conclusion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Conclusion"
+          },
+          "recommended_action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecommendedAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "transaction_id",
+          "created_at"
+        ],
+        "title": "InvestigationResponse"
+      },
+      "LiveActivityItem": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "amount_inr": {
+            "type": "number",
+            "title": "Amount Inr"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Active decision label (reflects human analyst override if reviewed, otherwise ML label)"
+          },
+          "lifecycle_status": {
+            "type": "string",
+            "title": "Lifecycle Status",
+            "description": "Transaction payment lifecycle status: pending, approved, declined, held, disputed"
+          },
+          "is_reviewed": {
+            "type": "boolean",
+            "title": "Is Reviewed",
+            "description": "True if a human analyst review has been submitted for this transaction",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "amount",
+          "amount_inr",
+          "status",
+          "lifecycle_status"
+        ],
+        "title": "LiveActivityItem"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "ModelHealthResponse": {
+        "properties": {
+          "latest": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest"
+          },
+          "history": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "History",
+            "default": []
+          },
+          "fp_rate_by_account_age": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Fp Rate By Account Age",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "ModelHealthResponse"
+      },
+      "PendingReviewItem": {
+        "properties": {
+          "investigation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Investigation Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "recommended_action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended Action"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "amount_inr": {
+            "type": "number",
+            "title": "Amount Inr"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "investigation_id",
+          "transaction_id",
+          "amount",
+          "amount_inr",
+          "created_at"
+        ],
+        "title": "PendingReviewItem"
+      },
+      "PendingReviewsResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PendingReviewItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "PendingReviewsResponse"
+      },
+      "RecommendedAction": {
+        "type": "string",
+        "enum": [
+          "allow",
+          "verify",
+          "hold",
+          "block"
+        ],
+        "title": "RecommendedAction"
+      },
+      "ReviewCreate": {
+        "properties": {
+          "reviewer_name": {
+            "type": "string",
+            "title": "Reviewer Name"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision"
+          },
+          "final_action": {
+            "$ref": "#/components/schemas/FinalAction"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewer_name",
+          "decision",
+          "final_action"
+        ],
+        "title": "ReviewCreate"
+      },
+      "ReviewDecision": {
+        "type": "string",
+        "enum": [
+          "approved_ai_recommendation",
+          "overridden"
+        ],
+        "title": "ReviewDecision"
+      },
+      "ReviewResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "investigation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Investigation Id"
+          },
+          "reviewer_name": {
+            "type": "string",
+            "title": "Reviewer Name"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision"
+          },
+          "final_action": {
+            "$ref": "#/components/schemas/FinalAction"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "investigation_id",
+          "reviewer_name",
+          "decision",
+          "final_action",
+          "created_at"
+        ],
+        "title": "ReviewResponse"
+      },
+      "RiskLabel": {
+        "type": "string",
+        "enum": [
+          "allow",
+          "verify",
+          "hold",
+          "block"
+        ],
+        "title": "RiskLabel"
+      },
+      "RiskScoreResponse": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "risk_label": {
+            "$ref": "#/components/schemas/RiskLabel"
+          },
+          "feature_contributions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Feature Contributions"
+          },
+          "features": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Features"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "risk_score",
+          "risk_label",
+          "feature_contributions",
+          "features"
+        ],
+        "title": "RiskScoreResponse"
+      },
+      "SpikeResponse": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "current_count": {
+            "type": "integer",
+            "title": "Current Count"
+          },
+          "baseline_mean": {
+            "type": "number",
+            "title": "Baseline Mean"
+          },
+          "baseline_std": {
+            "type": "number",
+            "title": "Baseline Std"
+          },
+          "threshold": {
+            "type": "number",
+            "title": "Threshold"
+          },
+          "spike_detected": {
+            "type": "boolean",
+            "title": "Spike Detected"
+          },
+          "window_minutes": {
+            "type": "integer",
+            "title": "Window Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "current_count",
+          "baseline_mean",
+          "baseline_std",
+          "threshold",
+          "spike_detected",
+          "window_minutes"
+        ],
+        "title": "SpikeResponse"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in_minutes": {
+            "type": "integer",
+            "title": "Expires In Minutes"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in_minutes",
+          "user"
+        ],
+        "title": "TokenResponse"
+      },
+      "TransactionCreate": {
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Merchant Id"
+          },
+          "amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount",
+            "description": "Transaction amount in paise (must be greater than 0)"
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 10,
+            "title": "Currency",
+            "default": "INR"
+          },
+          "device_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Fingerprint"
+          },
+          "ip_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "instrument_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Hash"
+          },
+          "instrument_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "customer_id",
+          "merchant_id",
+          "amount"
+        ],
+        "title": "TransactionCreate"
+      },
+      "TransactionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "TransactionListResponse"
+      },
+      "TransactionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Customer Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Merchant Id"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "risk_label": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskLabel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "amount_inr": {
+            "type": "number",
+            "title": "Amount Inr",
+            "description": "Amount in INR (paise / 100)",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "customer_id",
+          "merchant_id",
+          "amount",
+          "currency",
+          "status",
+          "created_at"
+        ],
+        "title": "TransactionResponse"
+      },
+      "TransactionStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "declined",
+          "disputed",
+          "held"
+        ],
+        "title": "TransactionStatus"
+      },
+      "UserInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "role"
+        ],
+        "title": "UserInfo"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

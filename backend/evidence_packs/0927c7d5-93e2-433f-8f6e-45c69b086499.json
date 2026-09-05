@@ -1,0 +1,52 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-08-21T10:50:15.153419+00:00",
+  "transaction": {
+    "id": "040ccb70-9108-4450-b35e-fb351f1b8a85",
+    "amount_paise": 8500000,
+    "amount_inr": 85000.0,
+    "currency": "INR",
+    "status": "pending",
+    "created_at": "2026-08-21T10:50:14",
+    "risk_score": 32.5,
+    "risk_label": "allow",
+    "customer_id": "3391a3c8-9d86-4c1a-ae97-f2eb0e5af093",
+    "merchant_id": "41476ffe-79fe-4687-8def-123382470b88"
+  },
+  "chargeback": {
+    "id": "0927c7d5-93e2-433f-8f6e-45c69b086499",
+    "filed_at": "2026-08-21T10:50:15",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "738e2142-ac8d-4fbe-8d31-477b74e79c52",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device linked to 1 customer(s).",
+          "severity": "LOW_RISK",
+          "source": "get_device_history"
+        }
+      ]
+    },
+    "ai_conclusion": "Low risk profile (score: 32.5). No anomalous velocity or high-severity indicators found. Recommended action: ALLOW.",
+    "recommended_action": "allow",
+    "confidence": 0.9,
+    "created_at": "2026-08-21T10:50:15"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Analyst Priya",
+      "decision": "approved_ai_recommendation",
+      "final_action": "allow",
+      "reason": "Verified anomalous pattern with high confidence.",
+      "reviewed_at": "2026-08-21T10:50:15"
+    }
+  ],
+  "privacy_note": "Device fingerprints, IP addresses, and payment instrument identifiers are stored as SHA-256 hashes only. Raw PII is never persisted."
+}

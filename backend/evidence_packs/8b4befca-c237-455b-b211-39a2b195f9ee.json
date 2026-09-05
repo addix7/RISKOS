@@ -1,0 +1,62 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-08-22T07:25:27.209809+00:00",
+  "transaction": {
+    "id": "d0355488-e43c-4cc7-816f-16566eff6b6c",
+    "amount_paise": 8500000,
+    "amount_inr": 85000.0,
+    "currency": "INR",
+    "status": "pending",
+    "created_at": "2026-08-22T07:25:26",
+    "risk_score": 45.46,
+    "risk_label": "verify",
+    "customer_id": "5b1d3988-cea6-41f2-8307-d4a7daa756b3",
+    "merchant_id": "a2dd7d2c-9f4b-4fdc-9369-74b679a980aa"
+  },
+  "chargeback": {
+    "id": "8b4befca-c237-455b-b211-39a2b195f9ee",
+    "filed_at": "2026-08-22T07:25:27",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "1414b8a6-a9dd-4144-8237-73a46bf4679d",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device fingerprint shared across 2 distinct customer accounts (syndicate indicator).",
+          "severity": "HIGH_RISK",
+          "source": "get_device_history"
+        },
+        {
+          "finding": "Payment instrument shared across 2 distinct customer accounts (stolen card / carding ring indicator).",
+          "severity": "HIGH_RISK",
+          "source": "get_instrument_history"
+        },
+        {
+          "finding": "Graph analysis identified syndicate cluster with 1 other connected accounts sharing hardware/IP/payment credentials.",
+          "severity": "HIGH_RISK",
+          "source": "get_related_accounts"
+        }
+      ]
+    },
+    "ai_conclusion": "Moderate risk transaction (score: 45.5). Discrepancies detected requiring step-up verification (e.g. OTP/3DS).",
+    "recommended_action": "verify",
+    "confidence": 0.78,
+    "created_at": "2026-08-22T07:25:27"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Analyst Priya",
+      "decision": "approved_ai_recommendation",
+      "final_action": "verify",
+      "reason": "Verified anomalous pattern with high confidence.",
+      "reviewed_at": "2026-08-22T07:25:27"
+    }
+  ],
+  "privacy_note": "Device fingerprints, IP addresses, and payment instrument identifiers are stored as SHA-256 hashes only. Raw PII is never persisted."
+}

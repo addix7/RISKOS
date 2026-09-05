@@ -1,0 +1,76 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-09-02T06:40:03.327768+00:00",
+  "transaction": {
+    "id": "80a16dd6-35ea-45a1-9788-b2599eac9379",
+    "amount_paise": 8500000,
+    "amount_inr": 85000.0,
+    "currency": "INR",
+    "status": "held",
+    "created_at": "2026-09-02T06:40:03",
+    "risk_score": 69.5,
+    "risk_label": "hold"
+  },
+  "customer": {
+    "id": "251a7e37-24a2-463a-a981-02db3f676652",
+    "name": "Test Subject",
+    "email": "test_251a7e37@example.com",
+    "account_age_days": 0,
+    "trust_score": 0.9
+  },
+  "merchant": {
+    "id": "472b1830-bdad-4a58-8cc3-fb916e7a1908",
+    "name": "Test Merchant",
+    "category": "electronics"
+  },
+  "telemetry": {
+    "device_id": "652e44e1-f776-4b4d-b28a-774835a6445e",
+    "device_fingerprint_hash": "c60d9cc84bba6620208b6c3e1123c7143300e6d92f94d2e7334a114c4fd30e48",
+    "ip_id": "1baaeb86-1712-4b4c-8713-e753ea682e9c",
+    "ip_hash": "2a39f1eedcd9f986327b5e4da842426f4f05b8f16f0ef385639dbec0db70eaae",
+    "instrument_id": "d9e78057-878d-405e-9799-965c1ed30d84",
+    "instrument_hash": "d7d18589ccece1184a87a028ddf6e1778a71646e39fb03bc6ab0b50c16d71910",
+    "instrument_type": "card"
+  },
+  "chargeback": {
+    "id": "04a588b3-2ff6-479b-abdb-4618b4746f9b",
+    "filed_at": "2026-09-02T06:40:03",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "fb2f8da3-6b35-4db3-b09c-69b64d141709",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device linked exclusively to 1 customer.",
+          "severity": "LOW_RISK",
+          "source": "get_device_history"
+        },
+        {
+          "finding": "Adaptive Feedback: Prior similar case (Similar risk score (75.0 vs 69.5)) was overridden from 'hold' to 'allow' by analyst Senior Analyst Vikram (Reason: Verified user identity and genuine travel transaction.).",
+          "severity": "LOW_RISK",
+          "source": "adaptive_feedback_loop"
+        }
+      ]
+    },
+    "ai_conclusion": "High risk transaction (score: 69.5). Elevated risk signals found across shared hardware, IP, and card credentials. Recommended action: HOLD for human analyst review. (Note: Prior human analyst overrides were identified for this cluster, signaling potential family-sharing or VIP false positive).",
+    "recommended_action": "hold",
+    "confidence": 0.88,
+    "created_at": "2026-09-02T06:40:03"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Analyst Priya",
+      "decision": "approved_ai_recommendation",
+      "final_action": "hold",
+      "reason": "Verified anomalous pattern with high confidence.",
+      "reviewed_at": "2026-09-02T06:40:03"
+    }
+  ],
+  "privacy_statement": "Telemetry identifiers and payment instruments are cryptographically hashed using SHA-256. Raw payment credentials and raw IP addresses are not stored in unhashed form, ensuring full compliance with PCI-DSS and privacy regulations."
+}

@@ -1,0 +1,91 @@
+{
+  "evidence_pack_version": "1.0",
+  "generated_at": "2026-08-25T09:21:53.225528+00:00",
+  "transaction": {
+    "id": "c9f8351d-4a20-4b33-8206-8b7ac4a954f1",
+    "amount_paise": 12500000,
+    "amount_inr": 125000.0,
+    "currency": "INR",
+    "status": "pending",
+    "created_at": "2026-08-25T09:21:21",
+    "risk_score": 77.87,
+    "risk_label": "hold"
+  },
+  "customer": {
+    "id": "0182438d-3c82-40be-b9f1-290b4e7bf9dc",
+    "name": "Syndicate Operative 7",
+    "email": "burn_target@burner.xyz",
+    "account_age_days": 0,
+    "trust_score": 0.1
+  },
+  "merchant": {
+    "id": "0a2c16da-3347-4ba2-a85e-a97d10a3548f",
+    "name": "Croma Electronics",
+    "category": "electronics"
+  },
+  "telemetry": {
+    "device_id": "d8244331-3000-498b-a759-0a0b12ac3ba6",
+    "device_fingerprint_hash": "c902e7f5b5a2107e7e355b1237ad2c7a49e54639254a9131279f15f36770419f",
+    "ip_id": "40084422-fc61-4619-b81c-bdf36a6f86f0",
+    "ip_hash": "33ef6f753f53c3533f69fd36f4e81dd01c28b5aec05509ff494ad34731fce02b",
+    "instrument_id": "6891303f-7673-4e72-9f80-18a0980d004b",
+    "instrument_hash": "4d6920af7c7c473348d84f69ed9b8c607a457d6437635bb4145a637ad46bdf8b",
+    "instrument_type": "card"
+  },
+  "chargeback": {
+    "id": "4086a1b1-c45e-4388-a15f-ab7b69a1d49e",
+    "filed_at": "2026-08-25T09:21:53",
+    "status": "open"
+  },
+  "investigation": {
+    "id": "dc38a60f-9a73-426a-ae58-4e2b4f5c007e",
+    "evidence": {
+      "items": [
+        {
+          "finding": "Newly created account (0 days old). Low historical reputation.",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Customer trust score is critically low: 0.10",
+          "severity": "HIGH_RISK",
+          "source": "get_customer_history"
+        },
+        {
+          "finding": "Device fingerprint shared across 7 distinct customer accounts (syndicate indicator).",
+          "severity": "HIGH_RISK",
+          "source": "get_device_history"
+        },
+        {
+          "finding": "IP address shared across 7 distinct customer accounts (proxy/VPN exit node).",
+          "severity": "HIGH_RISK",
+          "source": "get_ip_history"
+        },
+        {
+          "finding": "Payment instrument shared across 7 distinct customer accounts (stolen card / carding ring indicator).",
+          "severity": "HIGH_RISK",
+          "source": "get_instrument_history"
+        },
+        {
+          "finding": "Graph analysis identified syndicate cluster with 6 other connected accounts sharing hardware/IP/payment credentials.",
+          "severity": "HIGH_RISK",
+          "source": "get_related_accounts"
+        }
+      ]
+    },
+    "ai_conclusion": "High risk transaction (score: 77.9). Elevated risk signals found across shared hardware, IP, and card credentials. Recommended action: HOLD for human analyst review.",
+    "recommended_action": "hold",
+    "confidence": 0.88,
+    "created_at": "2026-08-25T09:21:52"
+  },
+  "human_reviews": [
+    {
+      "reviewer": "Senior Analyst Vikram",
+      "decision": "approved_ai_recommendation",
+      "final_action": "hold",
+      "reason": "Confirmed syndicated multi-account sharing on device and IP. Placing account on security hold.",
+      "reviewed_at": "2026-08-25T09:21:52"
+    }
+  ],
+  "privacy_statement": "Telemetry identifiers and payment instruments are cryptographically hashed using SHA-256. Raw payment credentials and raw IP addresses are not stored in unhashed form, ensuring full compliance with PCI-DSS and privacy regulations."
+}
